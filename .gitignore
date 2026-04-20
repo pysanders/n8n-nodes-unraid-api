@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.tsbuildinfo
+*.js.map
+docs/
+.DS_Store
+Unraid-API@current--*.json
+package-lock.json
