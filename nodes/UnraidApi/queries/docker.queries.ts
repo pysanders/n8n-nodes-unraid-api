@@ -11,6 +11,7 @@ export const dockerQueries = {
 				state
 				status
 				autoStart
+				isUpdateAvailable
 				ports {
 					ip
 					privatePort
@@ -21,9 +22,25 @@ export const dockerQueries = {
 		}
 	}`,
 
-	get: `query {
+	getNetworks: `query {
 		docker {
-			containers {
+			networks {
+				id
+				name
+				created
+				scope
+				driver
+				enableIPv6
+				internal
+				attachable
+				containers
+			}
+		}
+	}`,
+
+	getOne: `query GetContainer($id: PrefixedID!) {
+		docker {
+			container(id: $id) {
 				id
 				names
 				image
@@ -33,6 +50,7 @@ export const dockerQueries = {
 				state
 				status
 				autoStart
+				isUpdateAvailable
 				ports {
 					ip
 					privatePort
@@ -45,13 +63,24 @@ export const dockerQueries = {
 		}
 	}`,
 
-	getStats: `query {
+	getUpdateStatuses: `query {
 		docker {
-			containers {
-				id
-				names
-				state
-				status
+			containerUpdateStatuses {
+				name
+				updateStatus
+			}
+		}
+	}`,
+
+	getLogs: `query GetContainerLogs($id: PrefixedID!, $tail: Int, $since: DateTime) {
+		docker {
+			logs(id: $id, tail: $tail, since: $since) {
+				containerId
+				lines {
+					timestamp
+					message
+				}
+				cursor
 			}
 		}
 	}`,
@@ -124,4 +153,34 @@ export const dockerMutations = {
 			}
 		}`,
 	},
+
+	updateContainer: `mutation UpdateContainer($id: PrefixedID!) {
+		docker {
+			updateContainer(id: $id) {
+				id
+				names
+				image
+				state
+				status
+			}
+		}
+	}`,
+
+	updateAllContainers: `mutation UpdateAllContainers {
+		docker {
+			updateAllContainers {
+				id
+				names
+				image
+				state
+				status
+			}
+		}
+	}`,
+
+	removeContainer: `mutation RemoveContainer($id: PrefixedID!, $withImage: Boolean) {
+		docker {
+			removeContainer(id: $id, withImage: $withImage)
+		}
+	}`,
 };

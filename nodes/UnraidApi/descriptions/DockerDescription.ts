@@ -19,16 +19,40 @@ export const dockerOperations: INodeProperties[] = [
 				action: 'Get a container',
 			},
 			{
+				name: 'Get Logs',
+				value: 'getLogs',
+				description: 'Get logs from a container',
+				action: 'Get container logs',
+			},
+			{
 				name: 'Get Many',
 				value: 'getMany',
 				description: 'List all containers',
 				action: 'List all containers',
 			},
 			{
+				name: 'Get Networks',
+				value: 'getNetworks',
+				description: 'List all Docker networks',
+				action: 'List all Docker networks',
+			},
+			{
+				name: 'Get Update Statuses',
+				value: 'getUpdateStatuses',
+				description: 'Check which containers have updates available',
+				action: 'Get container update statuses',
+			},
+			{
 				name: 'Pause',
 				value: 'pause',
 				description: 'Pause a container',
 				action: 'Pause a container',
+			},
+			{
+				name: 'Remove',
+				value: 'removeContainer',
+				description: 'Remove a container',
+				action: 'Remove a container',
 			},
 			{
 				name: 'Restart',
@@ -54,6 +78,18 @@ export const dockerOperations: INodeProperties[] = [
 				description: 'Unpause a container',
 				action: 'Unpause a container',
 			},
+			{
+				name: 'Update',
+				value: 'updateContainer',
+				description: 'Update a container to the latest image version',
+				action: 'Update a container',
+			},
+			{
+				name: 'Update All',
+				value: 'updateAllContainers',
+				description: 'Update all containers to their latest image versions',
+				action: 'Update all containers',
+			},
 		],
 		default: 'getMany',
 	},
@@ -70,7 +106,46 @@ export const dockerFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['docker'],
-				operation: ['get', 'start', 'stop', 'pause', 'unpause', 'restart'],
+				operation: ['get', 'start', 'stop', 'pause', 'unpause', 'restart', 'updateContainer', 'removeContainer', 'getLogs'],
+			},
+		},
+	},
+	{
+		displayName: 'Remove Image',
+		name: 'withImage',
+		type: 'boolean',
+		default: false,
+		description: 'Whether to also remove the container\'s image when removing the container',
+		displayOptions: {
+			show: {
+				resource: ['docker'],
+				operation: ['removeContainer'],
+			},
+		},
+	},
+	{
+		displayName: 'Tail Lines',
+		name: 'tailLines',
+		type: 'number',
+		default: 100,
+		description: 'Number of log lines to retrieve from the end',
+		displayOptions: {
+			show: {
+				resource: ['docker'],
+				operation: ['getLogs'],
+			},
+		},
+	},
+	{
+		displayName: 'Since',
+		name: 'since',
+		type: 'dateTime',
+		default: '',
+		description: 'Only return logs after this timestamp (ISO 8601)',
+		displayOptions: {
+			show: {
+				resource: ['docker'],
+				operation: ['getLogs'],
 			},
 		},
 	},

@@ -97,18 +97,43 @@ export class UnraidApi implements INodeType {
 
 					if (operation === 'get') {
 						const containerId = this.getNodeParameter('containerId', i) as string;
-						responseData = await unraidApiRequest.call(this, dockerQueries.get) as IDataObject;
-						const containers = ((responseData.docker as IDataObject)?.containers as IDataObject[]) ?? [];
-						const container = containers.find((c) => c.id === containerId);
+						responseData = await unraidApiRequest.call(this, dockerQueries.getOne, { id: containerId }) as IDataObject;
+						const container = (responseData.docker as IDataObject)?.container as IDataObject;
 						returnData.push({ json: container ?? {} });
 						continue;
 					}
 
-					if (operation === 'getStats') {
-						responseData = await unraidApiRequest.call(this, dockerQueries.getStats) as IDataObject;
-						const containers = ((responseData.docker as IDataObject)?.containers as IDataObject[]) ?? [];
-						for (const container of containers) {
-							returnData.push({ json: container });
+					if (operation === 'getNetworks') {
+						responseData = await unraidApiRequest.call(this, dockerQueries.getNetworks) as IDataObject;
+						const networks = ((responseData.docker as IDataObject)?.networks as IDataObject[]) ?? [];
+						for (const network of networks) {
+							returnData.push({ json: network });
+						}
+						continue;
+					}
+
+					if (operation === 'getUpdateStatuses') {
+						responseData = await unraidApiRequest.call(this, dockerQueries.getUpdateStatuses) as IDataObject;
+						const statuses = ((responseData.docker as IDataObject)?.containerUpdateStatuses as IDataObject[]) ?? [];
+						for (const status of statuses) {
+							returnData.push({ json: status });
+						}
+						continue;
+					}
+
+					if (operation === 'getLogs') {
+						const containerId = this.getNodeParameter('containerId', i) as string;
+						const tailLines = this.getNodeParameter('tailLines', i) as number;
+						const since = this.getNodeParameter('since', i) as string;
+						const variables: IDataObject = { id: containerId, tail: tailLines };
+						if (since) {
+							variables.since = since;
+						}
+						responseData = await unraidApiRequest.call(this, dockerQueries.getLogs, variables) as IDataObject;
+						const logs = (responseData.docker as IDataObject)?.logs as IDataObject;
+						const lines = (logs?.lines as IDataObject[]) ?? [];
+						for (const line of lines) {
+							returnData.push({ json: line });
 						}
 						continue;
 					}
@@ -119,6 +144,32 @@ export class UnraidApi implements INodeType {
 						responseData = await unraidApiRequest.call(this, dockerMutations.restart.start, { id: containerId }) as IDataObject;
 						const result = (responseData.docker as IDataObject)?.start as IDataObject;
 						returnData.push({ json: result ?? {} });
+						continue;
+					}
+
+					if (operation === 'updateContainer') {
+						const containerId = this.getNodeParameter('containerId', i) as string;
+						responseData = await unraidApiRequest.call(this, dockerMutations.updateContainer, { id: containerId }) as IDataObject;
+						const result = (responseData.docker as IDataObject)?.updateContainer as IDataObject;
+						returnData.push({ json: result ?? {} });
+						continue;
+					}
+
+					if (operation === 'updateAllContainers') {
+						responseData = await unraidApiRequest.call(this, dockerMutations.updateAllContainers) as IDataObject;
+						const containers = ((responseData.docker as IDataObject)?.updateAllContainers as IDataObject[]) ?? [];
+						for (const container of containers) {
+							returnData.push({ json: container });
+						}
+						continue;
+					}
+
+					if (operation === 'removeContainer') {
+						const containerId = this.getNodeParameter('containerId', i) as string;
+						const withImage = this.getNodeParameter('withImage', i) as boolean;
+						responseData = await unraidApiRequest.call(this, dockerMutations.removeContainer, { id: containerId, withImage }) as IDataObject;
+						const success = (responseData.docker as IDataObject)?.removeContainer as boolean;
+						returnData.push({ json: { id: containerId, operation: 'removeContainer', success: success ?? false } });
 						continue;
 					}
 
