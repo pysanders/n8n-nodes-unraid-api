@@ -22,7 +22,7 @@ export const vmOperations: INodeProperties[] = [
 				name: 'Get Many',
 				value: 'getMany',
 				description: 'List all VMs',
-				action: 'List all VMs',
+				action: 'List all vms',
 			},
 			{
 				name: 'Pause',

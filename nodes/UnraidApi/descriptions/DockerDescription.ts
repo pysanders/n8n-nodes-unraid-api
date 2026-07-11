@@ -34,7 +34,7 @@ export const dockerOperations: INodeProperties[] = [
 				name: 'Get Networks',
 				value: 'getNetworks',
 				description: 'List all Docker networks',
-				action: 'List all Docker networks',
+				action: 'List all docker networks',
 			},
 			{
 				name: 'Get Update Statuses',
