@@ -19,6 +19,12 @@ export const dockerOperations: INodeProperties[] = [
 				action: 'Get a container',
 			},
 			{
+				name: 'Get by Name',
+				value: 'getByName',
+				description: 'Find containers by name (partial match)',
+				action: 'Find containers by name',
+			},
+			{
 				name: 'Get Logs',
 				value: 'getLogs',
 				description: 'Get logs from a container',
@@ -107,6 +113,20 @@ export const dockerFields: INodeProperties[] = [
 			show: {
 				resource: ['docker'],
 				operation: ['get', 'start', 'stop', 'pause', 'unpause', 'restart', 'updateContainer', 'removeContainer', 'getLogs'],
+			},
+		},
+	},
+	{
+		displayName: 'Container Name',
+		name: 'containerName',
+		type: 'string',
+		required: true,
+		default: '',
+		description: 'Name or partial name to match against container names (case-insensitive)',
+		displayOptions: {
+			show: {
+				resource: ['docker'],
+				operation: ['getByName'],
 			},
 		},
 	},

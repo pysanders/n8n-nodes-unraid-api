@@ -45,13 +45,20 @@ Create a new **Unraid API** credential with:
 
 | Operation | Description |
 |-----------|-------------|
-| Get Many | List all containers |
-| Get | Get a single container |
+| Get Many | List all containers (includes update availability) |
+| Get | Get a single container by ID |
+| Get by Name | Find containers by name (partial, case-insensitive match) |
+| Get Logs | Get container logs (with tail count and since-timestamp filters) |
+| Get Networks | List all Docker networks |
+| Get Update Statuses | Check which containers have updates available |
 | Start | Start a container |
 | Stop | Stop a container |
 | Pause | Pause a container |
 | Unpause | Unpause a container |
 | Restart | Restart a container |
+| Update | Update a container to the latest image version |
+| Update All | Update all containers to their latest image versions |
+| Remove | Remove a container (optionally remove its image too) |
 
 ### Notification
 

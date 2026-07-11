@@ -103,6 +103,20 @@ export class UnraidApi implements INodeType {
 						continue;
 					}
 
+					if (operation === 'getByName') {
+						const containerName = (this.getNodeParameter('containerName', i) as string).toLowerCase();
+						responseData = await unraidApiRequest.call(this, dockerQueries.getMany) as IDataObject;
+						const containers = ((responseData.docker as IDataObject)?.containers as IDataObject[]) ?? [];
+						const matched = containers.filter((c) => {
+							const names = (c.names as string[]) ?? [];
+							return names.some((n) => n.toLowerCase().includes(containerName));
+						});
+						for (const container of matched) {
+							returnData.push({ json: container });
+						}
+						continue;
+					}
+
 					if (operation === 'getNetworks') {
 						responseData = await unraidApiRequest.call(this, dockerQueries.getNetworks) as IDataObject;
 						const networks = ((responseData.docker as IDataObject)?.networks as IDataObject[]) ?? [];
