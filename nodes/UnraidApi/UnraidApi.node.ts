@@ -89,9 +89,7 @@ export class UnraidApi implements INodeType {
 					if (operation === 'getMany') {
 						responseData = await unraidApiRequest.call(this, dockerQueries.getMany) as IDataObject;
 						const containers = ((responseData.docker as IDataObject)?.containers as IDataObject[]) ?? [];
-						for (const container of containers) {
-							returnData.push({ json: container });
-						}
+						returnData.push({ json: { containers } });
 						continue;
 					}
 
@@ -104,16 +102,27 @@ export class UnraidApi implements INodeType {
 					}
 
 					if (operation === 'getByName') {
-						const containerName = (this.getNodeParameter('containerName', i) as string).toLowerCase();
+						const searchTerm = (this.getNodeParameter('containerName', i) as string).toLowerCase();
+						const matchField = this.getNodeParameter('matchField', i) as string;
+						const exactMatch = this.getNodeParameter('exactMatch', i) as boolean;
 						responseData = await unraidApiRequest.call(this, dockerQueries.getMany) as IDataObject;
 						const containers = ((responseData.docker as IDataObject)?.containers as IDataObject[]) ?? [];
 						const matched = containers.filter((c) => {
-							const names = (c.names as string[]) ?? [];
-							return names.some((n) => n.toLowerCase().includes(containerName));
+							const matchName = () => {
+								const names = (c.names as string[]) ?? [];
+								return exactMatch
+									? names.some((n) => n.toLowerCase().replace(/^\//, '') === searchTerm)
+									: names.some((n) => n.toLowerCase().includes(searchTerm));
+							};
+							const matchImage = () => {
+								const image = ((c.image as string) ?? '').toLowerCase();
+								return exactMatch ? image === searchTerm : image.includes(searchTerm);
+							};
+							if (matchField === 'name') return matchName();
+							if (matchField === 'image') return matchImage();
+							return matchName() || matchImage();
 						});
-						for (const container of matched) {
-							returnData.push({ json: container });
-						}
+						returnData.push({ json: { containers: matched } });
 						continue;
 					}
 

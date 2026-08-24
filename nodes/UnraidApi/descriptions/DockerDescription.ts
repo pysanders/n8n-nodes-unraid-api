@@ -117,12 +117,43 @@ export const dockerFields: INodeProperties[] = [
 		},
 	},
 	{
-		displayName: 'Container Name',
+		displayName: 'Search Term',
 		name: 'containerName',
 		type: 'string',
 		required: true,
 		default: '',
-		description: 'Name or partial name to match against container names (case-insensitive)',
+		description: 'Name or image to match against (case-insensitive)',
+		displayOptions: {
+			show: {
+				resource: ['docker'],
+				operation: ['getByName'],
+			},
+		},
+	},
+	{
+		displayName: 'Match Field',
+		name: 'matchField',
+		type: 'options',
+		default: 'name',
+		description: 'Which field to match against',
+		options: [
+			{ name: 'Container Name', value: 'name' },
+			{ name: 'Image Name', value: 'image' },
+			{ name: 'Either', value: 'either' },
+		],
+		displayOptions: {
+			show: {
+				resource: ['docker'],
+				operation: ['getByName'],
+			},
+		},
+	},
+	{
+		displayName: 'Exact Match',
+		name: 'exactMatch',
+		type: 'boolean',
+		default: false,
+		description: 'Whether to require an exact match instead of a partial match',
 		displayOptions: {
 			show: {
 				resource: ['docker'],
